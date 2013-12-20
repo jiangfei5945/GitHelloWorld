@@ -10,55 +10,56 @@ namespace ConsoleTest
 {
     public class SerializeTest
     {
-        //http://stackoverflow.com/questions/3167932/c-sharp-wcf-when-is-it-appropriate-to-use-the-knowntype-attribute
         public static void Test()
         {
-            //SerializeNow();
-            DeSerializeNow();
+            SerializeNow();
+            //DeSerializeNow();
         }
 
         public static void SerializeNow()
         {
-            ConcreteClassToSerialize c = new ConcreteClassToSerialize();
-            c.Name = "123";
-            FileStream fileStream = new FileStream("e:\\temp5.txt", FileMode.Create);
-            DataContractSerializer b = new DataContractSerializer(typeof(ConcreteClassToSerialize));
-            b.WriteObject(fileStream, c);
+            ConcreteClassToSerializeA c = new ConcreteClassToSerializeA();
+            c.Name = "asdf";
+            c.Age = 12;
+            FileStream fileStream = new FileStream("e:\\temp1.txt", FileMode.Create);
+            XmlSerializer b = new XmlSerializer(typeof(ClassToSerialize));
+            b.Serialize(fileStream, c);
             fileStream.Close();
         }
 
         public static void DeSerializeNow()
         {
             object c = null;
-            FileStream fileStream = new FileStream("e:\\temp5.txt", FileMode.Open, FileAccess.Read, FileShare.Read);
-            DataContractSerializer b = new DataContractSerializer(typeof(ClassToSerialize));
-            fileStream.Seek(0, SeekOrigin.Begin);
-            c = b.ReadObject(fileStream);
+            FileStream fileStream = new FileStream("e:\\temp1.txt", FileMode.Open, FileAccess.Read, FileShare.Read);
+            XmlSerializer b = new XmlSerializer(typeof(ClassToSerialize));
+            c = b.Deserialize(fileStream);
             Console.WriteLine(c.ToString());
             fileStream.Close();
         }
     }
 
-    //[Serializable]
-    [DataContract]
-    [KnownType(typeof(ConcreteClassToSerialize))]
+    [Serializable]
+    [XmlInclude(typeof(ConcreteClassToSerializeA))]
+    [XmlInclude(typeof(ConcreteClassToSerializeB))]
     public class ClassToSerialize
     {
-        //public int id = 100;
-        //public string name = "Name";
-        //public string Sex = "男";
-
-        [DataMember]
         public string Name { get; set; }
+        //public bool CanExecute(string name)
+        //{
+        //    return string.IsNullOrEmpty(name) ? false : true;
+        //}
     }
 
-    //[Serializable]
-    [DataContract]
-    public class ConcreteClassToSerialize : ClassToSerialize
+    [Serializable]
+    public class ConcreteClassToSerializeA : ClassToSerialize
     {
-        [DataMember]
-        //public int age = 90;
         public int Age { get; set; }
+    }
+
+    [Serializable]
+    public class ConcreteClassToSerializeB : ClassToSerialize
+    {
+        public string Gender { get; set; }
     }
 
 
